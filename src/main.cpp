@@ -4,6 +4,19 @@
 #include "threadpool.h"
 
 
+float get_focus_factor(cv::Mat frame) {
+    cv::Mat gray;
+    cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+
+    cv::Mat laplacian;
+    cv::Laplacian(gray, laplacian, CV_64F);
+
+    cv::Scalar mean, std;
+    cv::meanStdDev(laplacian, mean, std);
+    return std.val[0] * std.val[0];
+}
+
+
 int main(int argc, char **argv) {
     // validate arguments
     if (argc != 2) {
@@ -32,8 +45,13 @@ int main(int argc, char **argv) {
             frame_count
         );
         cv::imshow(window_name, frame);
+        cv::waitKey(0);
+
+        float focus_factor = get_focus_factor(frame);
+        std::cout << focus_factor << std::endl;
         
-        std::cout << "read frame " << frame_count << std::endl;
+
+
         frame_count++;
     }
 }
